@@ -47,7 +47,8 @@ function AlbumThumb(props: Props) {
           <img 
             className={`${ready ? 'image-ready' : 'image-not-ready'} card-image-bottom`} 
             src={album.coverImage} 
-            onLoad={() => setReady(true)}/>
+            onLoad={() => setReady(true)}
+            alt=""/>
         </div>
       </div>
     </Link>

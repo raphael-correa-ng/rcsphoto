@@ -27,7 +27,6 @@ export interface CloudantCredentials {
   password: string,
   host: string,
   port: number,
-  url: string
 }
 
 export default class RcsPhotoApi {

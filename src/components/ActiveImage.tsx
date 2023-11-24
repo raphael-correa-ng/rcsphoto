@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Image } from '../services/RcsPhotoApi';
 import { faChevronLeft, faChevronRight, faTimes, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,6 +31,26 @@ function ActiveImage(props: Props) {
     }
   });
 
+  const hasNext = useCallback(() => {
+    return currentIndex < images.length - 1;
+  }, [currentIndex, images])
+
+  const hasPrevious = useCallback(() => {
+    return currentIndex > 0;
+  }, [currentIndex])
+
+  const incrementCurrIndex = useCallback(() => {
+    if (hasNext()) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  }, [currentIndex, hasNext, setCurrentIndex])
+
+  const decrementCurrIndex = useCallback(() => {
+    if (hasPrevious()) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  }, [currentIndex, hasPrevious, setCurrentIndex])
+
   useEffect(() => {
     setTouchEndClass(undefined);
 
@@ -41,24 +61,12 @@ function ActiveImage(props: Props) {
         decrementCurrIndex();
       }
     }
-  
+
     document.addEventListener('keyup', handleKeyUp);
     return () => {
       document.removeEventListener('keyup', handleKeyUp);
     }
-  }, [ currentIndex ]);
-
-  const incrementCurrIndex = () => {
-    if (hasNext()) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  }
-
-  const decrementCurrIndex = () => {
-    if (hasPrevious()) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  }
+  }, [ currentIndex, decrementCurrIndex, incrementCurrIndex ]);
 
   const handleTouchStart = (touchEvent: React.TouchEvent<HTMLDivElement>) => {
     setStartTouchX(touchEvent.targetTouches[0].clientX);
@@ -105,16 +113,8 @@ function ActiveImage(props: Props) {
     return size >  512 ? image.medium : image.small;
   }
 
-  const hasNext = () => {
-    return currentIndex < images.length - 1;
-  }
-
-  const hasPrevious = () => {
-    return currentIndex > 0;
-  }
-
   return <div id="active-image">
-    <a className="top-icon-container icon-left" href={images[currentIndex].full} target="_blank">
+    <a className="top-icon-container icon-left" href={images[currentIndex].full} target="_blank" rel="noreferrer">
       <FontAwesomeIcon icon={faDownload}/>
       <small>high-res</small>
     </a>
@@ -136,7 +136,8 @@ function ActiveImage(props: Props) {
 
         <img className={ready ? 'image-ready' : 'image-not-ready'} 
           src={selectBestSize(images[currentIndex])} 
-          onLoad={() => setReady(true)}/>
+          onLoad={() => setReady(true)}
+          alt=""/>
 
         <div className={`nav-icon-container ${!hasNext() ? 'visibility-hidden' : ''}`} onClick={handleClickNext}>
           <FontAwesomeIcon className="nav-icon" icon={faChevronRight}/>
@@ -146,14 +147,20 @@ function ActiveImage(props: Props) {
       {
         hasNext() && 
         <div className="image-container next">
-          <img src={selectBestSize(images[currentIndex + 1])} onLoad={() => setNumSideImagesLoaded(numSideImagesLoaded + 1)}/>
+          <img
+            src={selectBestSize(images[currentIndex + 1])}
+            onLoad={() => setNumSideImagesLoaded(numSideImagesLoaded + 1)}
+            alt=""/>
         </div>
       }
 
       {
         hasPrevious() && 
         <div className="image-container previous">
-          <img src={selectBestSize(images[currentIndex - 1])} onLoad={() => setNumSideImagesLoaded(numSideImagesLoaded + 1)}/>
+          <img
+            src={selectBestSize(images[currentIndex - 1])}
+            onLoad={() => setNumSideImagesLoaded(numSideImagesLoaded + 1)}
+            alt=""/>
         </div>
       }
     </div>

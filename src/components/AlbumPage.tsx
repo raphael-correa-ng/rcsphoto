@@ -23,7 +23,7 @@ function AlbumPage(props: Props) {
       setAlbum(album);
     }
     fetchAndSetAlbum();
-  }, [ albumId ]);
+  }, [ albumId, service ]);
 
   const getMockImages = (): Image[] => {
     return Array.from(Array(12).keys()).map(i => ({

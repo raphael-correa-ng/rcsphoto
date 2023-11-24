@@ -13,11 +13,12 @@ function About() {
         <p>All images were taken with the Sony DSC-RX100 2 and 5 cameras.</p>
         <p>I shoot mostly in manual and record in raw format. I also use CaptureOne to edit my work.</p>
         <p>This website was written in React with Typescript.</p>
-        <p>The source code is on <a href='https://www.github.com/raphael-correa-ng/rcsphoto' target='_blank'>GitHub</a>.</p>
+        <p>The source code is on <a href='https://www.github.com/raphael-correa-ng/rcsphoto' target='_blank' rel='noreferrer'>GitHub</a>.</p>
         <p>Thanks for viewing!</p>
         <div className="image-container">
           <img 
-            src="me.jpg" 
+            src="me.jpg"
+            alt=""
             className={ready ? 'image-ready' : 'image-not-ready'} 
             onLoad={() => setReady(true)}/>
         </div>

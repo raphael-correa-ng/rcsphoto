@@ -25,7 +25,7 @@ function ImageThumb(props: Props) {
       const height = [ landscape, landscape, portrait ][randomInt(0, 2)];
       setPlaceholderHeight(height);
     }
-  });
+  }, []);
 
   return <a className="image-thumb-container animate-scale item-responsive-width">
     {
@@ -34,7 +34,8 @@ function ImageThumb(props: Props) {
         className={ready ? 'image-ready' : 'image-not-ready'} 
         src={image.thumb} 
         onClick={onClick} 
-        onLoad={() => setReady(true)}/>
+        onLoad={() => setReady(true)}
+        alt=""/>
     }
     {
       !image.thumb &&

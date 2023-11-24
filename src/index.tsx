@@ -6,12 +6,12 @@ import { ServiceConfig } from './services/RcsPhotoApi';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const {
-  REACT_APP_IMAGE_BASE_URL: imageBaseUrl,
+  REACT_APP_IMAGE_BASE_URL,
   REACT_APP_DB_CREDENTIALS
 } = process.env;
 
 const serviceConfig: ServiceConfig = {
-  imageBaseUrl,
+  imageBaseUrl: REACT_APP_IMAGE_BASE_URL,
   credentials: JSON.parse(REACT_APP_DB_CREDENTIALS)
 };
 
