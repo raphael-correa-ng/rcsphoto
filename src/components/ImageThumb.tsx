@@ -27,7 +27,7 @@ function ImageThumb(props: Props) {
     }
   }, []);
 
-  return <a className="image-thumb-container animate-scale item-responsive-width">
+  return <div className="image-thumb-container animate-scale item-responsive-width">
     {
       image.thumb &&
       <img 
@@ -41,7 +41,7 @@ function ImageThumb(props: Props) {
       !image.thumb &&
       <div className="image-placeholder" style={{ height: placeholderHeight }}/>
     }
-  </a>
+  </div>
 }
 
 export default ImageThumb;
