@@ -66,7 +66,7 @@ export default class RcsPhotoApi {
   private readonly enrichAlbum = (album) : Album => {
     return {
       ...album,
-      coverImage: this.createUrl(album.id, album.coverImage, 'small'),
+      coverImage: this.createUrl(album.id, album.coverImage, 'thumb'),
       images: album.images.map(imageName => ({
         thumb: this.createUrl(album.id, imageName, 'thumb'),
         small: this.createUrl(album.id, imageName, 'small'),
