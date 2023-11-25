@@ -18,15 +18,14 @@ export interface Image {
 
 export interface ServiceConfig {
   imageBaseUrl: string,
-  credentials: CloudantCredentials
+  cloudantCredentials: CloudantCredentials
 }
 
 export interface CloudantCredentials {
-  database: string,
-  username: string,
-  password: string,
   host: string,
   port: number,
+  username: string,
+  password: string,
 }
 
 export default class RcsPhotoApi {
@@ -45,7 +44,7 @@ export default class RcsPhotoApi {
     }
 
     const response = await this.dbConnection()
-      .get(this.config.credentials.database, '_all_docs?include_docs=true')
+      .get('albums', '_all_docs?include_docs=true')
 
     this.cache = response.data.rows
       .map(row => this.enrichAlbum(row.doc))
@@ -59,8 +58,20 @@ export default class RcsPhotoApi {
   }
 
   private readonly dbConnection = () => {
-    const { credentials: { host, port, username: user, password: pass } } = this.config;
-    return new NodeCouchDb({ protocol: 'https', host, port, auth: { user, pass } });
+    const {
+      cloudantCredentials: {
+        host,
+        port,
+        username: user,
+        password: pass
+      }
+    } = this.config;
+    return new NodeCouchDb({
+      protocol: 'https',
+      host,
+      port,
+      auth: { user, pass }
+    });
   }
 
   private readonly enrichAlbum = (album) : Album => {

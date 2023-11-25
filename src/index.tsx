@@ -6,21 +6,21 @@ import { ServiceConfig } from './services/RcsPhotoApi';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const {
-  REACT_APP_IMAGE_BASE_URL,
-  REACT_APP_DB_CREDENTIALS,
-  REACT_APP_DB_USERNAME,
-  REACT_APP_DB_PASSWORD,
+  REACT_APP_IMAGE_BASE_URL: imageBaseUrl,
+  REACT_APP_CLOUDANT_HOST: host,
+  REACT_APP_CLOUDANT_PORT: port,
+  REACT_APP_CLOUDANT_USERNAME: username,
+  REACT_APP_CLOUDANT_PASSWORD: password,
 } = process.env;
 
-const credentials = {
-  ...JSON.parse(REACT_APP_DB_CREDENTIALS),
-  username: REACT_APP_DB_USERNAME,
-  password: REACT_APP_DB_PASSWORD
-};
-
 const serviceConfig: ServiceConfig = {
-  imageBaseUrl: REACT_APP_IMAGE_BASE_URL,
-  credentials
+  imageBaseUrl,
+  cloudantCredentials: {
+    host,
+    port: parseInt(port, 10),
+    username,
+    password
+  }
 };
 
 ReactDOM.render(
