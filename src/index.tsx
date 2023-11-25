@@ -15,8 +15,6 @@ const serviceConfig: ServiceConfig = {
   credentials: JSON.parse(REACT_APP_DB_CREDENTIALS)
 };
 
-document.title = 'RCS Photography';
-
 ReactDOM.render(
   <React.StrictMode>
     <App serviceConfig={serviceConfig}/>
