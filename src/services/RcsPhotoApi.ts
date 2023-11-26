@@ -1,5 +1,3 @@
-import NodeCouchDb from 'node-couchdb';
-
 export interface Album {
   id: string;
   name: string;
@@ -18,14 +16,7 @@ export interface Image {
 
 export interface ServiceConfig {
   imageBaseUrl: string,
-  cloudantCredentials: CloudantCredentials
-}
-
-export interface CloudantCredentials {
-  host: string,
-  port: number,
-  username: string,
-  password: string,
+  serviceBaseUrl: string,
 }
 
 export default class RcsPhotoApi {
@@ -43,10 +34,10 @@ export default class RcsPhotoApi {
       return this.cache;
     }
 
-    const response = await this.dbConnection()
-      .get('albums', '_all_docs?include_docs=true')
+    const response = await fetch(this.config.serviceBaseUrl + '/albums');
 
-    this.cache = response.data.rows
+    this.cache = (await response.json())
+      .body.data.rows
       .map(row => this.enrichAlbum(row.doc))
       .sort((a, b) => a.sortOrder - b.sortOrder);
 
@@ -55,23 +46,6 @@ export default class RcsPhotoApi {
 
   public readonly getAlbum = async (albumId: string) : Promise<Album> => {
     return (await this.getAlbums()).find(album => album.id === albumId);
-  }
-
-  private readonly dbConnection = () => {
-    const {
-      cloudantCredentials: {
-        host,
-        port,
-        username: user,
-        password: pass
-      }
-    } = this.config;
-    return new NodeCouchDb({
-      protocol: 'https',
-      host,
-      port,
-      auth: { user, pass }
-    });
   }
 
   private readonly enrichAlbum = (album) : Album => {

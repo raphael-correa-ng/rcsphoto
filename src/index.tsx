@@ -7,20 +7,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const {
   REACT_APP_IMAGE_BASE_URL: imageBaseUrl,
-  REACT_APP_CLOUDANT_HOST: host,
-  REACT_APP_CLOUDANT_PORT: port,
-  REACT_APP_CLOUDANT_USERNAME: username,
-  REACT_APP_CLOUDANT_PASSWORD: password,
+  REACT_APP_SERVICE_BASE_URL: serviceBaseUrl
 } = process.env;
 
 const serviceConfig: ServiceConfig = {
   imageBaseUrl,
-  cloudantCredentials: {
-    host,
-    port: parseInt(port, 10),
-    username,
-    password
-  }
+  serviceBaseUrl
 };
 
 ReactDOM.render(
