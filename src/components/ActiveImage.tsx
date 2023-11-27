@@ -66,12 +66,14 @@ function ActiveImage(props: Props) {
   const transitionToPrevious = async () => {
     setTouchEndClass('transition-to-previous');
     await waitForTransitionAnimation();
+    setTouchEndClass(undefined);
     goToPrevious();
   }
 
   const transitionToNext = async () => {
     setTouchEndClass('transition-to-next');
     await waitForTransitionAnimation();
+    setTouchEndClass(undefined);
     goToNext();
   }
 
@@ -110,7 +112,6 @@ function ActiveImage(props: Props) {
   }
 
   useEffect(() => {
-    setTouchEndClass(undefined);
     document.addEventListener('keyup', handleKeyUp);
     return () => {
       document.removeEventListener('keyup', handleKeyUp);
@@ -138,7 +139,7 @@ function ActiveImage(props: Props) {
           <FontAwesomeIcon className="nav-icon" icon={faChevronLeft}/>
         </div>
 
-        <img className={ready ? 'image-ready' : 'image-not-ready'} 
+        <img className={ready ? 'image-ready' : 'image-not-ready'}
           src={images[currentIndex][imageSize]}
           onLoad={() => setReady(true)}
           alt=""/>
