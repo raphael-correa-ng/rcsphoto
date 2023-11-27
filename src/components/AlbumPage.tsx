@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import RcsPhotoApi, { Album, Image } from '../services/RcsPhotoApi';
 import ActiveImage from './ActiveImage';
 import ImageThumb from './ImageThumb';
+import ImageThumbLoading from './ImageThumbLoading';
 import PageHeader from './PageHeader';
 
 interface Props {
@@ -55,8 +56,13 @@ function AlbumPage(props: Props) {
       }
       <div className="thumbs-container">
         {
-          (album?.images || getMockImages()).map((image, i) => 
+          album?.images && album.images.map((image, i) =>
             <ImageThumb key={i} image={image} onClick={() => setActiveImageIndex(i)}/>
+          )
+        }
+        {
+          !album?.images && getMockImages().map((image, i) =>
+            <ImageThumbLoading key={i}/>
           )
         }
       </div>
