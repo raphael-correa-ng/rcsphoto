@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Image } from '../services/RcsPhotoApi';
 
 interface Props {
