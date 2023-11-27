@@ -35,9 +35,17 @@ function AlbumPage(props: Props) {
     }));
   }
 
+  const subtitles = album
+    ? [
+        album.description,
+        `Camera: ${album.camera}`,
+        `${album.images.length} images`
+    ]
+    : [];
+
   return <div id="album-page">
     <div className="container">
-      <PageHeader title={album?.name} subtitle={album ? `${album.images.length} images` : undefined}/>
+      <PageHeader title={album?.name} subtitle={subtitles}/>
       {
         activeImageIndex !== undefined &&
         <ActiveImage 
