@@ -11,28 +11,19 @@ interface Props {
   serviceConfig: ServiceConfig
 }
 
-export default class App extends React.Component<Props, {}> {
-
-  private readonly rcsPhotoApi;
-
-  constructor(props) {
-    super(props);
-    this.rcsPhotoApi = new RcsPhotoApi(this.props.serviceConfig);
-    this.state = {
-      itemsPerRow: 6
-    }
-  }
-
-  render() {
-    return <div id="rcs-photo">
-      <BrowserRouter>
-        <Nav/>
-        <Routes>
-          <Route path="/" element={<AlbumList service={this.rcsPhotoApi}/>}/>
-          <Route path="/albums/:albumId" element={<AlbumPage service={this.rcsPhotoApi}/>}/>
-          <Route path="/about" element={<About/>}/>
-        </Routes>
-      </BrowserRouter>
-    </div>;
-  }
+function App(props: Props) {
+  // todo: explore implementing this as a Provider pattern
+  const rcsPhotoApi = new RcsPhotoApi(props.serviceConfig);
+  return <div id="rcs-photo">
+    <BrowserRouter>
+      <Nav/>
+      <Routes>
+        <Route path="/" element={<AlbumList service={rcsPhotoApi}/>}/>
+        <Route path="/albums/:albumId" element={<AlbumPage service={rcsPhotoApi}/>}/>
+        <Route path="/about" element={<About/>}/>
+      </Routes>
+    </BrowserRouter>
+  </div>;
 }
+
+export default App;
