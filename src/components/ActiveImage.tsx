@@ -21,8 +21,14 @@ function ActiveImage(props: Props) {
   const [ ready, setReady ] = useState<boolean>();
   const [ startTouchX, setStartTouchX ] = useState<number>();
   const [ lastTouchX, setLastTouchX ] = useState<number>();
-  const [ touchEndClass, setTouchEndClass ] = useState<TouchEndClass>();  
-  const [ numSideImagesLoaded, setNumSideImagesLoaded ] = useState<number>(0);
+  const [ touchEndClass, setTouchEndClass ] = useState<TouchEndClass>();
+  const [ previousReady, setPreviousReady ] = useState<boolean>();
+  const [ nextReady, setNextReady ] = useState<boolean>();
+  const [ desirePrevious, setDesirePrevious ] = useState<boolean>();
+  const [ desireNext, setDesireNext ] = useState<boolean>();
+
+  const maxWindowDimension = Math.max(window.innerWidth, window.innerHeight);
+  const imageSize = maxWindowDimension > 512 ? 'medium' : 'small';
 
   useEffect(() => {
     document.body.classList.add('overflow-hidden');
@@ -31,42 +37,57 @@ function ActiveImage(props: Props) {
     }
   });
 
-  const hasNext = useCallback(() => {
-    return currentIndex < images.length - 1;
-  }, [currentIndex, images])
-
-  const hasPrevious = useCallback(() => {
-    return currentIndex > 0;
-  }, [currentIndex])
-
-  const incrementCurrIndex = useCallback(() => {
-    if (hasNext()) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  }, [currentIndex, hasNext, setCurrentIndex])
-
-  const decrementCurrIndex = useCallback(() => {
-    if (hasPrevious()) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  }, [currentIndex, hasPrevious, setCurrentIndex])
+  useEffect(() => {
+    setReady(false);
+    setPreviousReady(false);
+    setNextReady(false);
+    setDesirePrevious(false);
+    setDesireNext(false);
+  }, [currentIndex]);
 
   useEffect(() => {
-    setTouchEndClass(undefined);
-
-    const handleKeyUp = ({ code }) => {
-      if (code ===  'ArrowRight') {
-        incrementCurrIndex();
-      } else if (code === 'ArrowLeft') {
-        decrementCurrIndex();
-      }
+    if (desirePrevious && previousReady) {
+      transitionToPrevious();
     }
+  }, [previousReady]);
 
-    document.addEventListener('keyup', handleKeyUp);
-    return () => {
-      document.removeEventListener('keyup', handleKeyUp);
+  useEffect(() => {
+    if (desireNext && nextReady) {
+      transitionToNext();
     }
-  }, [ currentIndex, decrementCurrIndex, incrementCurrIndex ]);
+  }, [nextReady]);
+
+  const hasNext = () => {
+    return currentIndex < images.length - 1;
+  }
+
+  const hasPrevious = () => {
+    return currentIndex > 0;
+  }
+
+  const goToNext = () => {
+    if (hasNext() && nextReady) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  }
+
+  const goToPrevious = () => {
+    if (hasPrevious() && previousReady) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  }
+
+  const transitionToPrevious = async () => {
+    setTouchEndClass('transition-to-previous');
+    await waitForTransitionAnimation();
+    goToPrevious();
+  }
+
+  const transitionToNext = async () => {
+    setTouchEndClass('transition-to-next');
+    await waitForTransitionAnimation();
+    goToNext();
+  }
 
   const handleTouchStart = (touchEvent: React.TouchEvent<HTMLDivElement>) => {
     setStartTouchX(touchEvent.targetTouches[0].clientX);
@@ -77,41 +98,46 @@ function ActiveImage(props: Props) {
   }
 
   const handleTouchEnd = async () => {
-    const allowTouch = numSideImagesLoaded === ((hasNext() ? 1 : 0) + (hasPrevious() ? 1 : 0));
+    const allowTouch = ready && !desirePrevious && !desireNext;
     if (allowTouch) {
       const diff = lastTouchX - startTouchX;
-      if (hasNext() && diff < -minSwipeAmount) {
-        setNumSideImagesLoaded(0);
-        setTouchEndClass('transition-to-next');
-        await waitForTransitionAnimation();
-        incrementCurrIndex();
-      } else if (hasPrevious() && diff > minSwipeAmount) {
-        setNumSideImagesLoaded(0);
-        setTouchEndClass('transition-to-previous');
-        await waitForTransitionAnimation();
-        decrementCurrIndex();
+      const isSwipingToPrevious = diff > minSwipeAmount;
+      const isSwipingToNext = diff < -minSwipeAmount;
+      if (isSwipingToPrevious && hasPrevious()) {
+        if (previousReady) {
+          await transitionToPrevious();
+        } else {
+          setDesirePrevious(true);
+        }
+      } else if (isSwipingToNext && hasNext()) {
+        if (nextReady) {
+          await transitionToNext();
+        } else {
+          setDesireNext(true);
+        }
       }
     }
-  }
-
-  const handleClickNext = () => {
-    setReady(false); 
-    incrementCurrIndex();
-  }
-
-  const handleClickPrevious = () => {
-    setReady(false); 
-    decrementCurrIndex();
   }
 
   const waitForTransitionAnimation = () => {
     return new Promise(resolve => setTimeout(resolve, 500));
   }
 
-  const selectBestSize = (image: Image) => {
-    const size = Math.max(window.innerWidth, window.innerHeight);
-    return size >  512 ? image.medium : image.small;
+  const handleKeyUp = ({ code }) => {
+    if (code ===  'ArrowRight') {
+      goToNext();
+    } else if (code === 'ArrowLeft') {
+      goToPrevious();
+    }
   }
+
+  useEffect(() => {
+    setTouchEndClass(undefined);
+    document.addEventListener('keyup', handleKeyUp);
+    return () => {
+      document.removeEventListener('keyup', handleKeyUp);
+    }
+  }, [previousReady, nextReady]);
 
   return <div id="active-image">
     <a className="top-icon-container icon-left" href={images[currentIndex].full} target="_blank" rel="noreferrer">
@@ -130,36 +156,36 @@ function ActiveImage(props: Props) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}>
         
-        <div className={`nav-icon-container ${!hasPrevious() ? 'visibility-hidden' : ''}`} onClick={handleClickPrevious}>
+        <div className={`nav-icon-container ${!hasPrevious() ? 'visibility-hidden' : ''}`} onClick={goToPrevious}>
           <FontAwesomeIcon className="nav-icon" icon={faChevronLeft}/>
         </div>
 
         <img className={ready ? 'image-ready' : 'image-not-ready'} 
-          src={selectBestSize(images[currentIndex])} 
+          src={images[currentIndex][imageSize]}
           onLoad={() => setReady(true)}
           alt=""/>
 
-        <div className={`nav-icon-container ${!hasNext() ? 'visibility-hidden' : ''}`} onClick={handleClickNext}>
+        <div className={`nav-icon-container ${!hasNext() ? 'visibility-hidden' : ''}`} onClick={goToNext}>
           <FontAwesomeIcon className="nav-icon" icon={faChevronRight}/>
         </div>
       </div>
 
       {
-        hasNext() && 
-        <div className="image-container next">
+        hasPrevious() &&
+        <div className="image-container previous">
           <img
-            src={selectBestSize(images[currentIndex + 1])}
-            onLoad={() => setNumSideImagesLoaded(numSideImagesLoaded + 1)}
+            src={images[currentIndex - 1][imageSize]}
+            onLoad={() => setPreviousReady(true)}
             alt=""/>
         </div>
       }
 
       {
-        hasPrevious() && 
-        <div className="image-container previous">
+        hasNext() && 
+        <div className="image-container next">
           <img
-            src={selectBestSize(images[currentIndex - 1])}
-            onLoad={() => setNumSideImagesLoaded(numSideImagesLoaded + 1)}
+            src={images[currentIndex + 1][imageSize]}
+            onLoad={() => setNextReady(true)}
             alt=""/>
         </div>
       }
