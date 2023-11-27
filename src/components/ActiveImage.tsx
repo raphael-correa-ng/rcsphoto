@@ -24,8 +24,6 @@ function ActiveImage(props: Props) {
   const [ touchEndClass, setTouchEndClass ] = useState<TouchEndClass>();
   const [ previousReady, setPreviousReady ] = useState<boolean>();
   const [ nextReady, setNextReady ] = useState<boolean>();
-  const [ desirePrevious, setDesirePrevious ] = useState<boolean>();
-  const [ desireNext, setDesireNext ] = useState<boolean>();
 
   const maxWindowDimension = Math.max(window.innerWidth, window.innerHeight);
   const imageSize = maxWindowDimension > 512 ? 'medium' : 'small';
@@ -37,25 +35,11 @@ function ActiveImage(props: Props) {
     }
   });
 
-  useEffect(() => {
+  const clearReadyStates = () => {
     setReady(false);
     setPreviousReady(false);
     setNextReady(false);
-    setDesirePrevious(false);
-    setDesireNext(false);
-  }, [currentIndex]);
-
-  useEffect(() => {
-    if (desirePrevious && previousReady) {
-      transitionToPrevious();
-    }
-  }, [previousReady]);
-
-  useEffect(() => {
-    if (desireNext && nextReady) {
-      transitionToNext();
-    }
-  }, [nextReady]);
+  }
 
   const hasNext = () => {
     return currentIndex < images.length - 1;
@@ -66,13 +50,15 @@ function ActiveImage(props: Props) {
   }
 
   const goToNext = () => {
-    if (hasNext() && nextReady) {
+    if (hasNext()) {
+      clearReadyStates();
       setCurrentIndex(currentIndex + 1);
     }
   }
 
   const goToPrevious = () => {
-    if (hasPrevious() && previousReady) {
+    if (hasPrevious()) {
+      clearReadyStates();
       setCurrentIndex(currentIndex - 1);
     }
   }
@@ -98,23 +84,15 @@ function ActiveImage(props: Props) {
   }
 
   const handleTouchEnd = async () => {
-    const allowTouch = ready && !desirePrevious && !desireNext;
+    const allowTouch = ready;
     if (allowTouch) {
       const diff = lastTouchX - startTouchX;
       const isSwipingToPrevious = diff > minSwipeAmount;
       const isSwipingToNext = diff < -minSwipeAmount;
-      if (isSwipingToPrevious && hasPrevious()) {
-        if (previousReady) {
-          await transitionToPrevious();
-        } else {
-          setDesirePrevious(true);
-        }
-      } else if (isSwipingToNext && hasNext()) {
-        if (nextReady) {
-          await transitionToNext();
-        } else {
-          setDesireNext(true);
-        }
+      if (isSwipingToPrevious && hasPrevious() && previousReady) {
+        await transitionToPrevious();
+      } else if (isSwipingToNext && hasNext() && nextReady) {
+        await transitionToNext();
       }
     }
   }
