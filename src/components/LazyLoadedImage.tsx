@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-import { Image } from '../services/RcsPhotoApi';
 
 interface Props {
   className: string;
@@ -15,11 +14,10 @@ function LazyLoadedImage(props: Props) {
   const { className, src, onClick, onLoad, threshold, width, height } = props;
 
   const [isInViewPort, setIsInViewPort] = useState<boolean>();
-  const [ready, setReady] = useState<boolean>();
 
   const imgRef = useRef(null);
 
-  const checkViewport = (threshold = 100) => {
+  const checkViewport = () => {
     if (!imgRef?.current) return false;
     const top = imgRef.current.getBoundingClientRect().top;
     return top >= 0 && top <= window.innerHeight + threshold;
