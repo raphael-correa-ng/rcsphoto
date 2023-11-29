@@ -18,6 +18,7 @@ function ImageThumb(props: Props) {
 
   return <div className="image-thumb-container animate-scale item-responsive-width">
     <LazyLoadedImage
+      threshold={100}
       width={width}
       height={landscapeHeight}
       className={ready ? 'image-ready' : 'image-not-ready'}
