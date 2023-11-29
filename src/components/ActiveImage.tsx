@@ -1,5 +1,6 @@
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Image } from '../services/RcsPhotoApi';
 import { faChevronLeft, faChevronRight, faTimes, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,7 +16,7 @@ type TouchEndClass = 'transition-to-previous' | 'transition-to-next';
 const minSwipeAmount = 20;
 
 function ActiveImage(props: Props) {
-  const { startIndex, images, onClose } = props; 
+  const { startIndex, images, onClose } = props;
 
   const [ currentIndex, setCurrentIndex ] = useState<number>(startIndex);
   const [ ready, setReady ] = useState<boolean>();
@@ -28,12 +29,32 @@ function ActiveImage(props: Props) {
   const maxWindowDimension = Math.max(window.innerWidth, window.innerHeight);
   const imageSize = maxWindowDimension > 512 ? 'medium' : 'small';
 
+  const navigate = useNavigate();
+  const currentLocation = window.location.pathname;
+
+  const backButtonIntercept = (event) => {
+    onClose();
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    window.removeEventListener('popstate', backButtonIntercept);
+    navigate(currentLocation);
+  };
+
   useEffect(() => {
+    window.addEventListener('popstate', backButtonIntercept);
     document.body.classList.add('overflow-hidden');
     return () => {
       document.body.classList.remove('overflow-hidden');
     }
-  });
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener('keyup', handleKeyUp);
+    return () => {
+      document.removeEventListener('keyup', handleKeyUp);
+    }
+  }, [previousReady, nextReady]);
 
   const clearReadyStates = () => {
     setReady(false);
@@ -110,13 +131,6 @@ function ActiveImage(props: Props) {
       goToPrevious();
     }
   }
-
-  useEffect(() => {
-    document.addEventListener('keyup', handleKeyUp);
-    return () => {
-      document.removeEventListener('keyup', handleKeyUp);
-    }
-  }, [previousReady, nextReady]);
 
   return <div id="active-image">
     <a className="top-icon-container icon-left" href={images[currentIndex].full} target="_blank" rel="noreferrer">
