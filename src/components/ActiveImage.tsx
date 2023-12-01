@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Image } from '../services/RcsPhotoApi';
 import { faChevronLeft, faChevronRight, faTimes, faDownload } from "@fortawesome/free-solid-svg-icons";
@@ -32,19 +32,28 @@ function ActiveImage(props: Props) {
   const navigate = useNavigate();
   const currentLocation = window.location.pathname;
 
-  const backButtonIntercept = (event) => {
+  const backButtonIntercept = React.useCallback((event) => {
     onClose();
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
     window.removeEventListener('popstate', backButtonIntercept);
+    console.log(' called')
     navigate(currentLocation);
-  };
+  }, []);
+
+  const removePopstateListenerAndCallOnClose = React.useCallback(() => {
+    window.removeEventListener('popstate', backButtonIntercept);
+    onClose();
+  }, []);
 
   useEffect(() => {
     window.addEventListener('popstate', backButtonIntercept);
     document.body.classList.add('overflow-hidden');
     return () => {
+      // cannot remove 'popstate' listener here,
+      // because this code gets called before the
+      // 'popstate' listener is called
       document.body.classList.remove('overflow-hidden');
     }
   }, []);
@@ -138,7 +147,7 @@ function ActiveImage(props: Props) {
       <small>high-res</small>
     </a>
 
-    <div className="top-icon-container icon-right" onClick={onClose}>
+    <div className="top-icon-container icon-right" onClick={removePopstateListenerAndCallOnClose}>
       <FontAwesomeIcon icon={faTimes}/>
       <small>close</small>
     </div>
