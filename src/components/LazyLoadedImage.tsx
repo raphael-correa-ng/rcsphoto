@@ -20,7 +20,7 @@ function LazyLoadedImage(props: Props) {
   const checkViewport = () => {
     if (!imgRef?.current) return false;
     const top = imgRef.current.getBoundingClientRect().top;
-    return top >= 0 && top <= window.innerHeight + threshold;
+    return top <= window.innerHeight + threshold;
   }
 
   const handleScroll = () => {
