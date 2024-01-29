@@ -17,25 +17,23 @@ function LazyLoadedImage(props: Props) {
 
   const imgRef = useRef(null);
 
-  const checkViewport = () => {
-    if (!imgRef?.current) return false;
-    const top = imgRef.current.getBoundingClientRect().top;
-    return top <= window.innerHeight + threshold;
-  }
-
-  const handleScroll = () => {
-    if (checkViewport()) {
-      setIsInViewPort(true);
-    }
-  };
-
   useEffect(() => {
+    const checkViewport = () => {
+      if (!imgRef?.current) return false;
+      const top = imgRef.current.getBoundingClientRect().top;
+      return top <= window.innerHeight + threshold;
+    }
+    const handleScroll = () => {
+      if (checkViewport()) {
+        setIsInViewPort(true);
+      }
+    };
     handleScroll();
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
     }
-  }, []);
+  }, [ threshold ]);
 
   return <div style={{
       width: isInViewPort ? 'auto' : width,
