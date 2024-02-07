@@ -31,20 +31,19 @@ function ActiveImage(props: Props) {
   const navigate = useNavigate();
   const currentLocation = window.location.pathname;
 
-  const backButtonIntercept = React.useCallback((event) => {
+  const backButtonIntercept = useCallback((event) => {
     onClose();
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
     window.removeEventListener('popstate', backButtonIntercept);
-    console.log(' called')
     navigate(currentLocation);
-  }, []);
+  }, [onClose, navigate, currentLocation]);
 
-  const removePopstateListenerAndCallOnClose = React.useCallback(() => {
+  const removePopstateListenerAndCallOnClose = useCallback(() => {
     window.removeEventListener('popstate', backButtonIntercept);
     onClose();
-  }, []);
+  }, [onClose, backButtonIntercept]);
 
   useEffect(() => {
     window.addEventListener('popstate', backButtonIntercept);
@@ -57,40 +56,33 @@ function ActiveImage(props: Props) {
     }
   }, []);
 
-  useEffect(() => {
-    document.addEventListener('keyup', handleKeyUp);
-    return () => {
-      document.removeEventListener('keyup', handleKeyUp);
-    }
-  }, [previousReady, nextReady]);
-
-  const clearReadyStates = () => {
+  const clearReadyStates = useCallback(() => {
     setReady(false);
     setPreviousReady(false);
     setNextReady(false);
-  }
+  }, [setReady, setPreviousReady, setNextReady])
 
-  const hasNext = () => {
+  const hasNext = useCallback(() => {
     return currentIndex < images.length - 1;
-  }
+  }, [currentIndex, images])
 
-  const hasPrevious = () => {
+  const hasPrevious = useCallback(() => {
     return currentIndex > 0;
-  }
+  }, [currentIndex])
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     if (hasNext()) {
       clearReadyStates();
       setCurrentIndex(currentIndex + 1);
     }
-  }
+  }, [hasNext, clearReadyStates, setCurrentIndex, currentIndex])
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     if (hasPrevious()) {
       clearReadyStates();
       setCurrentIndex(currentIndex - 1);
     }
-  }
+  }, [hasPrevious, clearReadyStates, setCurrentIndex, currentIndex])
 
   const transitionToPrevious = async () => {
     setTouchEndClass('transition-to-previous');
@@ -132,13 +124,20 @@ function ActiveImage(props: Props) {
     return new Promise(resolve => setTimeout(resolve, 500));
   }
 
-  const handleKeyUp = ({ code }) => {
+  const handleKeyUp = useCallback(({ code }) => {
     if (code ===  'ArrowRight') {
       goToNext();
     } else if (code === 'ArrowLeft') {
       goToPrevious();
     }
-  }
+  }, [goToNext, goToPrevious])
+
+  useEffect(() => {
+    document.addEventListener('keyup', handleKeyUp);
+    return () => {
+      document.removeEventListener('keyup', handleKeyUp);
+    }
+  }, [handleKeyUp]);
 
   return <div id="active-image">
     <a className="top-icon-container icon-left" href={images[currentIndex].full} target="_blank" rel="noreferrer">
@@ -151,12 +150,12 @@ function ActiveImage(props: Props) {
       <small>close</small>
     </div>
 
-    <div className={`images-container ${touchEndClass || ''}`}> 
+    <div className={`images-container ${touchEndClass || ''}`}>
       <div className="image-container"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}>
-        
+
         <div className={`nav-icon-container ${!hasPrevious() ? 'visibility-hidden' : ''}`} onClick={goToPrevious}>
           <FontAwesomeIcon className="nav-icon" icon={faChevronLeft}/>
         </div>
@@ -182,7 +181,7 @@ function ActiveImage(props: Props) {
       }
 
       {
-        hasNext() && 
+        hasNext() &&
         <div className="image-container next">
           <img
             src={images[currentIndex + 1][imageSize]}
