@@ -1,17 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import RcsPhotoApi, { Album, Image } from '../services/RcsPhotoApi';
+import { Album, Image } from '../services/RcsPhotoApi';
 import ActiveImage from './ActiveImage';
 import ImageThumb from './ImageThumb';
 import ImageThumbLoading from './ImageThumbLoading';
 import PageHeader from './PageHeader';
+import { ServiceContext } from '../App';
 
-interface Props {
-  service: RcsPhotoApi;
-}
-
-function AlbumPage(props: Props) {
-  const { service } = props;
+function AlbumPage() {
+  const { service } = useContext(ServiceContext);
   const { albumId } = useParams();
 
   const [ album, setAlbum ] = useState<Album>();

@@ -1,60 +1,47 @@
-import React from 'react';
-import RcsPhotoApi, { Album } from '../services/RcsPhotoApi'
+import React, { useState, useEffect, useContext } from 'react';
+import { Album } from '../services/RcsPhotoApi'
 import AlbumThumb from './AlbumThumb';
 import PageHeader from './PageHeader';
+import { ServiceContext } from '../App';
 
-interface Props {
-  service: RcsPhotoApi;
+const getLoadingAlbums = (count: number): Album[] => {
+  return Array.from(Array(count).keys())
+    .map(i => ({
+      id: undefined,
+      sortOrder: undefined,
+      name: undefined,
+      description: undefined,
+      camera: undefined,
+      images: undefined,
+      coverImage: undefined
+    }));
 }
 
-interface State {
-  albums: Album[];
-}
+function AlbumList() {
+  const { service } = useContext(ServiceContext);
+  const [ albums, setAlbums ] = useState<Album[]>(getLoadingAlbums(6));
 
-class AlbumList extends React.Component<Props, State> {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      albums: this.getLoadingAlbums(6)
+  useEffect(() => {
+    document.title = 'Albums | RCS Photography';
+    const fetchAndSet = async () => {
+      const albums = await service.getAlbums();
+      setAlbums(albums);
     }
-  }
+    fetchAndSet();
+  }, []);
 
-  componentDidMount = async () => {
-    document.title = 'Albums | RCS Photography';  
-    const albums = await this.props.service.getAlbums();
-    this.setState({ albums });
-  }
-
-  render() {
-    const { albums } = this.state;
-
-    return <div id="album-list">
-      <div className="container">
-        <div className="album-thumbs-container">
-          <PageHeader title="Albums" subtitle={"by Raphael Corrêa"}/>
-          {  
-            albums.map((album, index) =>
-              <AlbumThumb album={album} key={index}/>
-            )
-          }
-        </div>
+  return <div id="album-list">
+    <div className="container">
+      <div className="album-thumbs-container">
+        <PageHeader title="Albums" subtitle={"by Raphael Corrêa"}/>
+        {
+          albums.map((album, index) =>
+            <AlbumThumb album={album} key={index}/>
+          )
+        }
       </div>
-    </div>;
-  }
-
-  private readonly getLoadingAlbums = (count: number): Album[] => {
-    return Array.from(Array(count).keys())
-      .map(i => ({
-        id: undefined,
-        sortOrder: undefined,
-        name: undefined,
-        description: undefined,
-        camera: undefined,
-        images: undefined,
-        coverImage: undefined
-      }));
-  }
+    </div>
+  </div>;
 }
 
 export default AlbumList;
