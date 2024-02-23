@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.scss';
 import App from './App';
 import { ServiceConfig } from './services/RcsPhotoApi';
+import { ServiceConfigContext } from './contexts/ServiceConfigContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const {
@@ -17,7 +18,9 @@ const serviceConfig: ServiceConfig = {
 
 ReactDOM.render(
   <React.StrictMode>
-    <App serviceConfig={serviceConfig}/>
+    <ServiceConfigContext.Provider value={serviceConfig}>
+      <App/>
+    </ServiceConfigContext.Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

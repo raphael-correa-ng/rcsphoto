@@ -4,21 +4,12 @@ import Nav from './components/Nav';
 import About from './components/About';
 import AlbumPage from './components/AlbumPage';
 import AlbumList from './components/AlbumList';
-import RcsPhotoApi, { ServiceConfig } from './services/RcsPhotoApi';
+import { AlbumsContextProvider } from './contexts/AlbumsContext';
 import './App.scss';
 
-export const ServiceContext = React.createContext(undefined);
-
-interface Props {
-  serviceConfig: ServiceConfig
-}
-
-function App(props: Props) {
-  // todo: explore implementing this as a Provider pattern
-  const rcsPhotoApi = new RcsPhotoApi(props.serviceConfig);
-
+function App() {
   return <div id="rcs-photo">
-    <ServiceContext.Provider value={{ service: rcsPhotoApi }}>
+    <AlbumsContextProvider>
       <BrowserRouter>
         <Nav/>
         <Routes>
@@ -27,7 +18,7 @@ function App(props: Props) {
           <Route path="/about" element={<About/>}/>
         </Routes>
       </BrowserRouter>
-    </ServiceContext.Provider>
+    </AlbumsContextProvider>
   </div>;
 }
 

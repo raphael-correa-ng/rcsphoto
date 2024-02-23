@@ -24,7 +24,6 @@ export interface ServiceConfig {
 export default class RcsPhotoApi {
 
   private cache: Album[];
-
   private config: ServiceConfig;
 
   constructor(config: ServiceConfig) {
