@@ -4,11 +4,9 @@ import PageHeader from './PageHeader';
 import { AlbumsContext } from '../contexts/AlbumsContext';
 
 function AlbumList() {
-  const albums = useContext(AlbumsContext);
+  document.title = 'Albums | RCS Photography';
 
-  useEffect(() => {
-    document.title = 'Albums | RCS Photography';
-  }, []);
+  const albums = useContext(AlbumsContext);
 
   return <div id="album-list">
     <div className="container">
