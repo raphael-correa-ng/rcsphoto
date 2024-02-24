@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import PageHeader from './PageHeader';
 
-const imagesOfMe = ['me1.JPG', 'me2.JPG', 'me3.JPG', 'me4.JPG']
-    .map(src => ({ src, ready: false }));
+const images = ['me1.jpg', 'me2.jpg', 'me3.jpg', 'me4.jpg'];
 
 function About() {
   document.title = 'About | RCS Photography';
 
-  const [images, setImages] = useState(imagesOfMe);
+  const [imageIsReady, setImageIsReady] = useState<boolean[]>([]);
 
-  const setImageReady = (index) => {
-    const newImages = [...images];
-    newImages[index].ready = true;
-    setImages(newImages);
+  const setImageIsReadyToTrue = (index) => {
+    const newReady = [...imageIsReady];
+    newReady[index] = true;
+    setImageIsReady(newReady);
   }
 
   return <div id="about">
@@ -29,10 +28,10 @@ function About() {
             images.map((image, index) =>
               <img
                 key={index}
-                src={image.src}
+                src={image}
                 alt=""
-                className={image.ready ? 'image-ready' : 'image-not-ready'}
-                onLoad={() => setImageReady(index)}/>
+                className={imageIsReady[index] ? 'image-ready' : 'image-not-ready'}
+                onLoad={() => setImageIsReadyToTrue(index)}/>
             )
           }
         </div>
