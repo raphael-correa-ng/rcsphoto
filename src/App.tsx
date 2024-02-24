@@ -4,7 +4,6 @@ import Nav from './components/Nav';
 import About from './components/About';
 import AlbumPage from './components/AlbumPage';
 import AlbumList from './components/AlbumList';
-import { ServiceConfig } from './services/RcsPhotoApi';
 import { AlbumsContextProvider } from './contexts/AlbumsContext';
 import { ServiceConfigContextProvider } from './contexts/ServiceConfigContext';
 import './App.scss';
