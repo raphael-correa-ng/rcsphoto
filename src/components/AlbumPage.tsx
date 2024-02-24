@@ -20,6 +20,9 @@ const getMockImages = (): Image[] => {
 function AlbumPage() {
   const { albumId } = useParams();
   const album = useContext(AlbumsContext).find(album => album.id === albumId);
+
+  document.title = `${album.name} | RCS Photography`;
+
   const [ activeImageIndex, setActiveImageIndex ] = useState<number>();
 
   const subtitles = album
