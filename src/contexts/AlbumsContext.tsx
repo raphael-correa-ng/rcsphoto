@@ -15,7 +15,7 @@ const getLoadingAlbums = (count: number): Album[] => {
     }));
 }
 
-export const AlbumsContext = createContext<Album[] | null>(null);
+export const AlbumsContext = createContext<Album[] | undefined>(undefined);
 
 export const AlbumsContextProvider = ({ children }) => {
   const serviceConfig = useContext(ServiceConfigContext);
