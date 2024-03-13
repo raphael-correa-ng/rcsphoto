@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import AlbumThumb from './AlbumThumb';
 import PageHeader from './PageHeader';
 import { AlbumsContext } from '../contexts/AlbumsContext';
