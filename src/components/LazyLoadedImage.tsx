@@ -14,6 +14,7 @@ function LazyLoadedImage(props: Props) {
   const { className, src, onClick, onLoad, threshold, width, height } = props;
 
   const [isInViewPort, setIsInViewPort] = useState<boolean>();
+  const [ready, setReady] = useState<boolean>()
 
   const imgRef = useRef(null);
 
@@ -36,15 +37,15 @@ function LazyLoadedImage(props: Props) {
   }, [ threshold ]);
 
   return <div style={{
-      width: isInViewPort ? 'auto' : width,
-      height: isInViewPort ? 'auto' : height
+      width: ready ? 'auto' : width,
+      height: ready ? 'auto' : height
     }}>
     <img
       className={className}
       ref={imgRef}
       onClick={onClick}
       src={isInViewPort && src}
-      onLoad={onLoad}
+      onLoad={() => {setReady(true); onLoad();}}
       alt=""/>
   </div>
 }
