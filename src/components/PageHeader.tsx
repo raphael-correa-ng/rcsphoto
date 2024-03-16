@@ -8,9 +8,7 @@ interface Props {
 function PageHeader(props: Props) {
   const { title, subtitle } = props;
 
-  const subtitles = typeof subtitle === 'string'
-    ? [subtitle]
-    : (subtitle ?? []);
+  const subtitles = typeof subtitle === 'string' ? [subtitle] : subtitle;
 
   return <div className="page-header">
     <h2>
@@ -18,11 +16,14 @@ function PageHeader(props: Props) {
       { !title && <LoadingText chars={25}/> }
     </h2>
     {
-      subtitles.map((sub, index) =>
+      subtitles && subtitles.map((sub, index) =>
         <small key={index}>
           { sub }
         </small>
       )
+    }
+    {
+      !subtitles && <small><LoadingText chars={35}/></small>
     }
   </div>
 }

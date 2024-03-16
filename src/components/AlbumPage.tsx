@@ -33,7 +33,7 @@ function AlbumPage() {
         `Camera: ${album.camera}`,
         `${album.images.length} images`
     ]
-    : [];
+    : undefined;
 
   return <div id="album-page">
     <div className="container">
