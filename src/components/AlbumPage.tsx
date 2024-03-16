@@ -37,7 +37,7 @@ function AlbumPage() {
 
   return <div id="album-page">
     <div className="container">
-      <PageHeader title={album?.name} subtitle={subtitles}/>
+      <PageHeader title={album?.name} subtitle={subtitles} withLoadingPlaceholders={true}/>
       {
         activeImageIndex !== undefined &&
         <ActiveImage 
