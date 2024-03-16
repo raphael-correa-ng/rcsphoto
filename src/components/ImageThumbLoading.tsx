@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 const randomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1) + min)
@@ -8,8 +8,10 @@ const randomInt = (min: number, max: number) => {
 function ImageThumb() {
   const [placeholderHeight, setPlaceholderHeight] = useState<number>();
 
+  const placeholderRef = useRef(null);
+
   useEffect(() => {
-    const width = document.getElementsByClassName("image-placeholder")[0]?.clientWidth;
+    const width = placeholderRef.current.offsetWidth;
     if (width) {
       const landscape = 2 * width / 3;
       const portrait = 4 * width / 3
@@ -19,7 +21,7 @@ function ImageThumb() {
   }, []);
 
   return <div className="image-thumb-container animate-scale item-responsive-width">
-    <div className="image-placeholder" style={{ height: placeholderHeight }}/>
+    <div className="image-placeholder" ref={placeholderRef} style={{ height: placeholderHeight }}/>
   </div>
 }
 
