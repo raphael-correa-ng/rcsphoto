@@ -5,12 +5,12 @@ import About from './components/About';
 import AlbumPage from './components/AlbumPage';
 import AlbumList from './components/AlbumList';
 import { AlbumsContextProvider } from './contexts/AlbumsContext';
-import { ServiceConfigContextProvider } from './contexts/ServiceConfigContext';
+import { ServiceContextProvider } from './contexts/ServiceContext';
 import './App.scss';
 
 function App() {
   return <div id="rcs-photo">
-    <ServiceConfigContextProvider>
+    <ServiceContextProvider>
       <AlbumsContextProvider>
         <BrowserRouter>
           <Nav/>
@@ -21,7 +21,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </AlbumsContextProvider>
-    </ServiceConfigContextProvider>
+    </ServiceContextProvider>
   </div>;
 }
 

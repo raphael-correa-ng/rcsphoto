@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import RcsPhotoApi, { Album } from '../services/RcsPhotoApi';
-import { ServiceConfigContext } from './ServiceConfigContext';
+import { Album } from '../services/RcsPhotoApi';
+import { ServiceContext } from './ServiceContext';
 
 const getLoadingAlbums = (count: number): Album[] => {
   return Array.from(Array(count).keys())
@@ -18,13 +18,12 @@ const getLoadingAlbums = (count: number): Album[] => {
 export const AlbumsContext = createContext<Album[] | undefined>(undefined);
 
 export const AlbumsContextProvider = ({ children }) => {
-  const serviceConfig = useContext(ServiceConfigContext);
-  const rcsPhotoApi = new RcsPhotoApi(serviceConfig);
+  const service = useContext(ServiceContext);
   const [albums, setAlbums] = useState<Album[]>(getLoadingAlbums(6));
 
   useEffect(() => {
     const fetchAndSet = async () => {
-      const albums = await rcsPhotoApi.getAlbums();
+      const albums = await service.getAlbums();
       setAlbums(albums);
     }
     fetchAndSet();
