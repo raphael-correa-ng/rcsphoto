@@ -10,7 +10,7 @@ Features:
 - responsive layout for mobile compatibility
 - lazy-loading thumbnails for mindful use of resources
 - off-screen loading of images for a seamless browsing experience
-- loading placeholders for projects indication
+- loading placeholders for progress indication
 
 Uses the following cloud services:
 - IBM Cloudant database for album metadata (because it has an excellent web UI)
